@@ -14,6 +14,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Rute untuk registrasi dan login
+Route::post('/register', 'App\Http\Controllers\AuthController@register');
+Route::post('/login', 'App\Http\Controllers\AuthController@login');
+
+// Rute yang dilindungi oleh middleware JWT
+Route::middleware('jwt.auth')->group(function () {
+    Route::get('/profile', 'App\Http\Controllers\AuthController@profile');
+});
+
+Route::get('/userr', function (Request $request) {
+    return $request->user();
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
