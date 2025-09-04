@@ -3,6 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Api\ScheduleController;
+use App\Http\Controllers\Api\PersonController;
+use App\Http\Controllers\Api\CheckpointController;
+use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\ReportController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,3 +37,14 @@ Route::get('/userr', function (Request $request) {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/schedules', [ScheduleController::class, 'index']);                           // ?date=YYYY-MM-DD
+Route::get('/person/by-card/{uid}', [PersonController::class, 'byCardUid']);             // NFC UID
+
+Route::get('/checkpoints', [CheckpointController::class, 'index']);                      // ?scheduleId=...
+Route::get('/tasks', [TaskController::class, 'index']);                                   // ?checkpointId=...&scheduleId=...
+
+Route::post('/activity/start', [ActivityController::class, 'start']);
+Route::post('/activity/end',   [ActivityController::class, 'end']);
+
+Route::post('/report', [ReportController::class, 'store']);
