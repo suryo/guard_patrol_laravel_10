@@ -1,15 +1,15 @@
 <?php
-namespace App\Models;
 
+namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class TbPerson extends Model
 {
     protected $table = 'tb_person';
-    protected $fillable = ['uid','personId','personName','userName','isDeleted','lastUpdated'];
+    protected $primaryKey = 'uid';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = false;
 
-    // Jika PK kamu bukan "id", bisa diatur seperti ini (opsional):
-    // protected $primaryKey = 'personId';
-    // public $incrementing = false;
-    // protected $keyType = 'int';
+    protected $fillable = ['personId','personName','userName','isDeleted','lastUpdated'];
 }

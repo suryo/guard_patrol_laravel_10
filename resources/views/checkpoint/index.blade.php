@@ -1,50 +1,109 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h5 class="mb-0">Checkpoint</h5>
-  <a class="btn btn-primary" href="{{ route('checkpoint.create') }}">Tambah</a>
+<style>
+    /* Card & table look */
+    .cp-card { border:1px solid #e5e7eb; border-radius:.5rem; background:#fff; }
+    .cp-card-header { padding:.9rem 1rem; border-bottom:1px solid #e5e7eb; font-weight:600; }
+    .cp-card-body { padding:0; }
+    .table-wrap {
+        max-height: 68vh;               /* tinggi area scroll */
+        overflow-y: auto;
+    }
+    table.cp-table { width:100%; margin:0; }
+    table.cp-table thead th {
+        position: sticky; top: 0;
+        background:#f8fafc;             /* abu muda */
+        z-index: 1;
+        font-weight:600;
+        font-size:.9rem;
+        border-bottom:1px solid #e5e7eb;
+    }
+    table.cp-table th, table.cp-table td {
+        padding:.7rem .85rem;
+        border-bottom:1px solid #f1f5f9;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    .text-dim { color:#64748b; font-size:.9rem; }
+    .truncate { max-width: 360px; overflow: hidden; text-overflow: ellipsis; }
+    .w-checkbox { width: 44px; }
+</style>
+
+<div class="cp-card">
+    <div class="cp-card-header">
+        Checkpoint List
+    </div>
+
+    <div class="cp-card-body">
+        {{-- opsional: baris pencarian kecil --}}
+        <div class="px-3 py-2 border-bottom" style="display:flex; gap:.5rem; align-items:center;">
+            <form class="d-flex gap-2" style="flex:1;">
+                <input name="q" class="form-control form-control-sm" placeholder="Search name / NFC / address"
+                       value="{{ request('q') }}">
+                <button class="btn btn-sm btn-outline-primary">Search</button>
+                @if (request()->filled('q'))
+                    <a href="{{ route('checkpoint.index') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+                @endif
+            </form>
+
+            <a class="btn btn-sm btn-primary" href="{{ route('checkpoint.create') }}">+ New</a>
+        </div>
+
+        <div class="table-wrap">
+            <table class="cp-table">
+                <thead>
+                    <tr>
+                        <th class="w-checkbox">
+                            <input type="checkbox" id="check-all">
+                        </th>
+                        <th>Checkpoint Name</th>
+                        <th>Checkpoint NFC</th>
+                        <th>Last Update</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($items as $i)
+                        <tr>
+                            <td class="w-checkbox">
+                                <input type="checkbox" class="row-check" value="{{ $i->uid }}">
+                            </td>
+                            <td class="truncate">
+                                <a href="{{ route('checkpoint.show', $i->uid) }}" class="text-decoration-none">
+                                    {{ $i->checkpointName }}
+                                </a>
+                            </td>
+                            <td class="text-dim">{{ strtoupper($i->checkpointId) }}</td>
+                            <td class="text-dim">
+                                {{ optional($i->lastUpdated)->format('d/m/Y (H:i)') }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">No data</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- pagination --}}
+        <div class="px-3 py-2">
+            {{ $items->withQueryString()->links() }}
+        </div>
+    </div>
 </div>
 
-<form class="row g-2 mb-2">
-  <div class="col-md-4">
-    <input name="q" class="form-control" placeholder="Cari ID / Nama / Alamat"
-           value="{{ request('q') }}">
-  </div>
-  <div class="col-md-2"><button class="btn btn-outline-primary w-100">Cari</button></div>
-  @if(request()->filled('q'))
-    <div class="col-md-2"><a class="btn btn-outline-secondary w-100" href="{{ route('checkpoint.index') }}">Reset</a></div>
-  @endif
-</form>
-
-<table class="table table-sm table-bordered align-middle">
-  <thead class="table-light">
-    <tr>
-      <th>UID</th><th>ID</th><th>Nama</th><th>Lat</th><th>Lng</th><th>Alamat</th><th style="width:150px">Aksi</th>
-    </tr>
-  </thead>
-  <tbody>
-    @forelse($items as $i)
-    <tr>
-      <td>{{ $i->uid }}</td>
-      <td>{{ $i->checkpointId }}</td>
-      <td><a href="{{ route('checkpoint.show',$i) }}">{{ $i->checkpointName }}</a></td>
-      <td>{{ $i->latitude }}</td>
-      <td>{{ $i->longitude }}</td>
-      <td class="text-truncate" style="max-width:280px">{{ $i->address }}</td>
-      <td class="text-nowrap">
-        <a class="btn btn-sm btn-warning" href="{{ route('checkpoint.edit',$i) }}">Edit</a>
-        <form class="d-inline" method="post" action="{{ route('checkpoint.destroy',$i) }}">
-          @csrf @method('DELETE')
-          <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">Hapus</button>
-        </form>
-      </td>
-    </tr>
-    @empty
-    <tr><td colspan="7" class="text-center text-muted">Belum ada data</td></tr>
-    @endforelse
-  </tbody>
-</table>
-
-{{ $items->withQueryString()->links() }}
+<script>
+    // checkbox select all
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkAll = document.getElementById('check-all');
+        const rowChecks = document.querySelectorAll('.row-check');
+        if (checkAll) {
+            checkAll.addEventListener('change', () => {
+                rowChecks.forEach(cb => cb.checked = checkAll.checked);
+            });
+        }
+    });
+</script>
 @endsection

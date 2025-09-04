@@ -21,6 +21,8 @@ use App\Http\Controllers\{
 };
 
 use App\Http\Controllers\WebAuthController;
+
+use App\Http\Controllers\TbGuardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,6 +37,10 @@ use App\Http\Controllers\WebAuthController;
 Route::get('/', fn() => redirect()->route('person.index'));
 Route::resource('person', TbPersonController::class)->parameters(['person' => 'person']);
 Route::resource('checkpoint', TbCheckpointController::class)->parameters(['checkpoint' => 'checkpoint']);
+
+Route::resource('route-guard', TbGuardController::class)
+     ->parameters(['route-guard' => 'route_guard']);
+
 Route::resources([
     'users'             => TbUserController::class,
     'schedule'          => TbScheduleController::class,

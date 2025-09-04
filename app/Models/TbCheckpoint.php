@@ -11,6 +11,10 @@ class TbCheckpoint extends Model
         'checkStatus','isDeleted','userName','lastUpdated'
     ];
 
+    protected $primaryKey = 'uid';
+public $incrementing = true;
+protected $keyType = 'int';
+
     // Jika primary key bukan "id":
     // protected $primaryKey = 'checkpointId';
     // public $incrementing = false;
