@@ -18,7 +18,7 @@ class TbPersonController extends Controller
 
     public function store(Request $r) {
         $data = $r->validate([
-            'personId'   => 'required|string|max:2|unique:tb_person,personId',
+            'personId'   => 'required|string|max:100|unique:tb_person,personId',
             'personName' => 'required|string|max:60',
             'userName'   => 'nullable|string|max:60',
             'isDeleted'  => 'nullable|in:0,1',

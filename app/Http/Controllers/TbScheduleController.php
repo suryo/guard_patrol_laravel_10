@@ -10,39 +10,119 @@ use App\Models\TbScheduleTemplate;
 class TbScheduleController extends Controller
 {
     public function index(Request $r)
-{
-    $q     = trim($r->q ?? '');
-    $date  = $r->d ?: Carbon::today()->toDateString();
+    {
+        $q     = trim($r->q ?? '');
+        $date  = $r->d ?: now()->toDateString();
 
-    // daftar schedule utk tanggal terpilih
-    $schedules = TbSchedule::query()
-        ->when($q, function ($qq) use ($q) {
-            $qq->where(function ($w) use ($q) {
-                $w->where('scheduleId','like',"%$q%")
-                  ->orWhere('personId','like',"%$q%")
-                  ->orWhere('checkpointName','like',"%$q%");
+        // data schedule utk tanggal terpilih
+        $schedules = TbSchedule::query()
+            ->when($q, function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('scheduleId', 'like', "%$q%")
+                        ->orWhere('personId', 'like', "%$q%")
+                        ->orWhere('checkpointName', 'like', "%$q%");
+                });
+            })
+            ->whereDate('scheduleDate', $date)
+            ->orderBy('scheduleStart')
+            ->get();
+
+        // Peta phaseId => phaseName (opsional)
+        $phaseMap = [];
+        if (class_exists(\App\Models\TbPhase::class)) {
+            $phaseIds = $schedules->pluck('phaseId')->filter()->unique()->values();
+            if ($phaseIds->isNotEmpty()) {
+                $phaseMap = TbPhase::whereIn('phaseId', $phaseIds)->get()
+                    ->keyBy('phaseId')->map->phaseName->toArray();
+            }
+        }
+
+        // Grup per jam ➜ per phase
+        $groups = collect(range(0, 23))->mapWithKeys(function ($h) use ($schedules, $phaseMap) {
+            $start = sprintf('%02d:00:00', $h);
+            $end   = sprintf('%02d:59:59', $h);
+
+            $inHour = $schedules->filter(fn($i) => $i->scheduleStart >= $start && $i->scheduleStart <= $end);
+
+            // phaseId nullable → "no-phase" agar tetap tampil
+            $phaseGroups = $inHour->groupBy(function ($row) {
+                return $row->phaseId ?: 'no-phase';
+            })->map(function ($items, $pid) use ($phaseMap) {
+                // label phase
+                $label = $pid === 'no-phase'
+                    ? 'Phase'
+                    : ($phaseMap[$pid] ?? ('Phase ' . $pid));
+
+                // Siapkan tags ringan jika ada property yang bisa dijadikan tag
+                // (silakan ganti sesuai sumber task Anda)
+                $data = $items->values()->map(function ($it) {
+                    // contoh: ambil dari $it->templateTask jika tersedia di model (opsional)
+                    $tags = [];
+                    if (!empty($it->templateTask ?? null)) {
+                        // pisah koma/baris baru
+                        $tags = collect(preg_split('/[\r\n,]+/', $it->templateTask))
+                            ->filter()->take(6)->values()->all();
+                    }
+                    return [
+                        'model' => $it,            // kirim objek aslinya
+                        'tags'  => $tags,          // array tag string
+                    ];
+                });
+
+                return [
+                    'phase_id'    => $pid,
+                    'phase_label' => $label,
+                    'items'       => $data, // daftar point pada phase ini
+                ];
             });
-        })
-        ->when($date, fn($qq) => $qq->whereDate('scheduleDate',$date))
-        ->orderBy('scheduleStart')
-        ->get();
 
-    // grup per jam (00..23)
-    $groups = collect(range(0,23))->mapWithKeys(function($h) use ($schedules){
-        $start = sprintf('%02d:00:00',$h);
-        $end   = sprintf('%02d:59:59',$h);
-        $items = $schedules->filter(fn($i) => $i->scheduleStart >= $start && $i->scheduleStart <= $end);
-        return [ $h => $items->values() ];
-    });
+            return [$h => $phaseGroups];
+        });
 
-    // template schedule (panel bawah kiri)
-    $templates = TbScheduleTemplate::orderByDesc('lastUpdated')->paginate(10);
+        // Template Schedule (panel kiri bawah)
+        $templates = TbScheduleTemplate::orderByDesc('lastUpdated')->paginate(10);
 
-    // untuk kalender (bulan yang sedang dilihat)
-    $month = $r->m ? Carbon::createFromFormat('Y-m', $r->m) : Carbon::parse($date)->startOfMonth();
+        // Kalender
+        $month = $r->m
+            ? Carbon::createFromFormat('Y-m', $r->m)
+            : Carbon::parse($date)->startOfMonth();
 
-    return view('schedule.index', compact('q','date','schedules','groups','templates','month'));
-}
+        return view('schedule.index', compact('q', 'date', 'schedules', 'groups', 'templates', 'month'));
+    }
+    public function index_old(Request $r)
+    {
+        $q     = trim($r->q ?? '');
+        $date  = $r->d ?: Carbon::today()->toDateString();
+
+        // daftar schedule utk tanggal terpilih
+        $schedules = TbSchedule::query()
+            ->when($q, function ($qq) use ($q) {
+                $qq->where(function ($w) use ($q) {
+                    $w->where('scheduleId', 'like', "%$q%")
+                        ->orWhere('personId', 'like', "%$q%")
+                        ->orWhere('checkpointName', 'like', "%$q%");
+                });
+            })
+            ->when($date, fn($qq) => $qq->whereDate('scheduleDate', $date))
+            ->orderBy('scheduleStart')
+            ->get();
+
+        // grup per jam (00..23)
+        $groups = collect(range(0, 23))->mapWithKeys(function ($h) use ($schedules) {
+            $start = sprintf('%02d:00:00', $h);
+            $end   = sprintf('%02d:59:59', $h);
+            $items = $schedules->filter(fn($i) => $i->scheduleStart >= $start && $i->scheduleStart <= $end);
+            return [$h => $items->values()];
+        });
+
+        // template schedule (panel bawah kiri)
+        $templates = TbScheduleTemplate::orderByDesc('lastUpdated')->paginate(10);
+
+        // untuk kalender (bulan yang sedang dilihat)
+        $month = $r->m ? Carbon::createFromFormat('Y-m', $r->m) : Carbon::parse($date)->startOfMonth();
+
+        return view('schedule.index', compact('q', 'date', 'schedules', 'groups', 'templates', 'month'));
+    }
     public function create()
     {
         return view('schedule.create');

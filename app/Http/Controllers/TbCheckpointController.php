@@ -39,19 +39,26 @@ class TbCheckpointController extends Controller
     {
         return view('checkpoint.edit', compact('checkpoint'));
     }
+
     public function update(Request $r, TbCheckpoint $checkpoint)
     {
         $data = $r->validate([
-            'checkpointId' => 'required|max:20|unique:tb_checkpoint,checkpointId,' . $checkpoint->uid . ',uid',
+            'checkpointId'   => 'required|max:20|unique:tb_checkpoint,checkpointId,' . $checkpoint->uid . ',uid',
             'checkpointName' => 'required|max:60',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'address' => 'nullable|max:255',
-            'note' => 'nullable'
+            'latitude'       => 'nullable|numeric|between:-90,90',
+            'longitude'      => 'nullable|numeric|between:-180,180',
+            'address'        => 'nullable|max:255',
+            'note'           => 'nullable',
         ]);
-        $checkpoint->update($data + ['lastUpdated' => now()]);
+
+        // lastUpdated dikelola manual (karena timestamps dimatikan)
+        $checkpoint->fill($data);
+        $checkpoint->lastUpdated = now();
+        $checkpoint->save();
+
         return redirect()->route('checkpoint.index')->with('ok', 'Updated');
     }
+
     public function destroy(TbCheckpoint $checkpoint)
     {
         $checkpoint->delete();

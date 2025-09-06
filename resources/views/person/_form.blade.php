@@ -2,7 +2,7 @@
 <div class="row g-3">
   <div class="col-md-2">
     <label class="form-label">personId</label>
-    <input type="text" name="personId" maxlength="2"
+    <input type="text" name="personId" maxlength="100"
            class="form-control @error('personId') is-invalid @enderror"
            value="{{ old('personId', $person->personId ?? '') }}" required>
     @error('personId') <div class="invalid-feedback">{{ $message }}</div> @enderror
