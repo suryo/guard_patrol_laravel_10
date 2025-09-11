@@ -2,6 +2,11 @@
 
   {{-- "Dashboard" diarahkan ke person.index sesuai redirect di "/" --}}
 
+  <a href="{{ route('group.index') }}"
+     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('group.*') ? 'active' : '' }}">
+    <i class="bi bi-alarm me-2"></i> Group Waktu
+  </a>
+
   <a href="{{ route('checkpoint.index') }}"
      class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('checkpoint.*') ? 'active' : '' }}">
     <i class="bi bi-geo-alt-fill me-2"></i> Checkpoint

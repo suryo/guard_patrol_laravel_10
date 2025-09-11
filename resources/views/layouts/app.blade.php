@@ -13,14 +13,14 @@
   {{-- Bootstrap Icons --}}
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+  {{-- Vite (Laravel asset bundler) --}}
+  @vite(['resources/css/app.css','resources/js/app.js'])
+
   @stack('styles')
   <style>
     body { min-height: 100vh; }
-    .sidebar {
-      min-height: calc(100vh - 56px); /* tinggi layar - tinggi navbar */
-    }
+    .sidebar { min-height: calc(100vh - 56px); }
     @media (max-width: 991.98px) {
-      /* Sidebar jadi offcanvas pada layar kecil */
       .sidebar-offcanvas { width: 260px; }
     }
   </style>
@@ -32,11 +32,9 @@
 
   <div class="container-fluid">
     <div class="row">
-
-      {{-- Sidebar (offcanvas untuk mobile, fixed untuk desktop) --}}
+      {{-- Sidebar --}}
       <nav id="appSidebar" class="col-lg-2 d-lg-block bg-light border-end sidebar p-0">
         <div class="d-lg-none">
-          {{-- Versi offcanvas untuk layar kecil --}}
           <div class="offcanvas offcanvas-start sidebar-offcanvas" tabindex="-1" id="offcanvasSidebar">
             <div class="offcanvas-header">
               <h5 class="offcanvas-title">Menu</h5>
@@ -47,13 +45,12 @@
             </div>
           </div>
         </div>
-
         <div class="d-none d-lg-block h-100">
           @include('layouts.sidebar')
         </div>
       </nav>
 
-      {{-- Konten utama --}}
+      {{-- Konten --}}
       <main class="col-lg-10 ms-auto px-3 py-3">
         <h3 class="mb-3">@yield('page_heading', 'Guard Patrol')</h3>
 
@@ -78,7 +75,6 @@
           crossorigin="anonymous"></script>
 
   <script>
-    // Tombol toggle sidebar (untuk mobile)
     document.addEventListener('DOMContentLoaded', () => {
       const toggleBtn = document.getElementById('sidebarToggle');
       if (toggleBtn) {
@@ -91,6 +87,7 @@
     });
   </script>
 
+  {{-- Stack tambahan (misal schedule/index.js) --}}
   @stack('scripts')
 </body>
 </html>

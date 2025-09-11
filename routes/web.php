@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TbPersonController;
 use App\Http\Controllers\TbCheckpointController;
+use App\Http\Controllers\Ajax\PhaseAjaxController;
 
 use App\Http\Controllers\{
     TbUserController,
@@ -19,6 +20,8 @@ use App\Http\Controllers\{
     TbLogsController,
     LaporanController
 };
+
+
 
 use App\Http\Controllers\WebAuthController;
 
@@ -39,11 +42,36 @@ Route::resource('person', TbPersonController::class)->parameters(['person' => 'p
 Route::resource('checkpoint', TbCheckpointController::class)->parameters(['checkpoint' => 'checkpoint']);
 
 Route::resource('route-guard', TbGuardController::class)
-     ->parameters(['route-guard' => 'route_guard']);
+    ->parameters(['route-guard' => 'route_guard']);
+
+Route::prefix('ajax')->name('ajax.')->group(function () {
+    Route::get('schedule-group/{uid}/phases',  [PhaseAjaxController::class, 'index'])
+        ->name('schedule-group.phases');                // list phases by schedule_group + date
+    // opsi phase master untuk dipilih di modal
+    Route::get('phases/options', [PhaseAjaxController::class, 'options'])
+        ->name('phases.options');
+    Route::post('schedule-group/{uid}/phases', [PhaseAjaxController::class, 'store'])
+        ->name('schedule-group.phases.store');          // create phase
+    // update link (ganti phase / date / urutan)
+    Route::put('schedule-group-phase/{link}', [PhaseAjaxController::class, 'update'])
+        ->name('schedule-group-phase.update');
+    // hapus assignment phase dari group
+    Route::delete('schedule-group-phase/{link}', [PhaseAjaxController::class, 'destroy'])
+        ->name('schedule-group-phase.destroy');
+    // Route::delete('phase/{phase}', [PhaseAjaxController::class, 'destroy'])
+    //     ->name('phase.destroy');                        // delete phase
+});
+
+Route::get('schedule/assign-group', [TbScheduleController::class, 'assignGroup'])
+    ->name('schedule.assign-group');              // GET ?d=YYYY-MM-DD => {selected:[]}
+Route::post('schedule/assign-group', [TbScheduleController::class, 'saveAssignedGroup'])
+    ->name('schedule.assign-group.save');        // POST date + group_uids[]
+
+Route::resource('schedule', TbScheduleController::class)->parameters(['schedule' => 'schedule']);
 
 Route::resources([
     'users'             => TbUserController::class,
-    'schedule'          => TbScheduleController::class,
+    // 'schedule'          => TbScheduleController::class,
     'activity'          => TbActivityController::class,
     'report'            => TbReportController::class,
     'schedule-template' => TbScheduleTemplateController::class,
@@ -54,6 +82,13 @@ Route::resources([
     'phase'             => TbPhaseController::class,
     'logs'              => TbLogsController::class,
 ]);
+
+Route::resource('group', \App\Http\Controllers\TbGroupController::class)
+    ->parameters(['group' => 'group']);
+
+// routes/web.php
+
+
 
 Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
 
