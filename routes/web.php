@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TbPersonController;
 use App\Http\Controllers\TbCheckpointController;
 use App\Http\Controllers\Ajax\PhaseAjaxController;
+use App\Http\Controllers\TbTaskGroupController;
+
+
 
 use App\Http\Controllers\{
     TbUserController,
@@ -41,10 +44,27 @@ Route::get('/', fn() => redirect()->route('person.index'));
 Route::resource('person', TbPersonController::class)->parameters(['person' => 'person']);
 Route::resource('checkpoint', TbCheckpointController::class)->parameters(['checkpoint' => 'checkpoint']);
 
+Route::get('task-group', [TbTaskGroupController::class, 'manage'])
+    ->name('task-group.index');
+
+// resource tanpa index
+Route::resource('task-group', TbTaskGroupController::class)
+    ->except(['index'])
+    ->parameters(['task-group' => 'task_group'])
+    ->whereNumber('task_group');
 Route::resource('route-guard', TbGuardController::class)
     ->parameters(['route-guard' => 'route_guard']);
 
+Route::get('ajax/tasks', [TbTaskController::class, 'listJson'])->name('ajax.tasks');
+Route::delete('/schedule-template/bulk-destroy', [TbScheduleTemplateController::class, 'bulkDestroy'])
+    ->name('schedule-template.bulk-destroy');
 Route::prefix('ajax')->name('ajax.')->group(function () {
+    Route::get('tasks', [TbTaskGroupController::class, 'ajaxTasks'])->name('ajax.tasks');                 // list task
+    Route::get('task-groups', [TbTaskGroupController::class, 'ajaxGroups'])->name('ajax.task-groups');    // list group + tasks
+    Route::post('task-group/{task_group}/attach', [TbTaskGroupController::class, 'ajaxAttach'])->name('ajax.task-group.attach');   // attach many
+    Route::delete('task-group/{task_group}/detach/{task}', [TbTaskGroupController::class, 'ajaxDetach'])->name('ajax.task-group.detach'); // detach one
+
+
     Route::get('schedule-group/{uid}/phases',  [PhaseAjaxController::class, 'index'])
         ->name('schedule-group.phases');                // list phases by schedule_group + date
     // opsi phase master untuk dipilih di modal
@@ -59,7 +79,8 @@ Route::prefix('ajax')->name('ajax.')->group(function () {
     Route::delete('schedule-group-phase/{link}', [PhaseAjaxController::class, 'destroy'])
         ->name('schedule-group-phase.destroy');
     // Route::delete('phase/{phase}', [PhaseAjaxController::class, 'destroy'])
-    //     ->name('phase.destroy');                        // delete phase
+    //     ->name('phase.destroy');
+    // delete phase
 });
 
 Route::get('schedule/assign-group', [TbScheduleController::class, 'assignGroup'])

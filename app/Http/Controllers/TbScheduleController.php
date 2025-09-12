@@ -11,6 +11,9 @@ use App\Models\TbSchedule;
 use App\Models\TbGroup;
 use App\Models\TbScheduleGroup;
 use App\Models\TbScheduleTemplate;
+use App\Models\TbTaskGroupDetail;
+use App\Models\TbTaskGroup;
+
 
 class TbScheduleController extends Controller
 {
@@ -57,6 +60,25 @@ class TbScheduleController extends Controller
             ->paginate(10)
             ->appends($r->only(['q', 'd', 'm', 'tq']));
 
+        // detail untuk dropdown/select, cukup group + task (master)
+        $taskDetails = TbTaskGroupDetail::with([
+            'group:uid,groupName',
+            'task:uid,taskId,taskName',
+        ])
+            ->orderBy('group_uid')
+            ->orderBy('sortOrder')
+            ->get(['uid', 'group_uid', 'task_uid', 'sortOrder']);
+
+        // daftar group di kanan, bawa chips task-nya (master), JANGAN load tb_task_list
+        $taskGroups = TbTaskGroup::with([
+            'details' => function ($q) {
+                $q->orderBy('sortOrder')
+                    ->with(['task:uid,taskId,taskName']);
+            }
+        ])
+            ->orderBy('groupName')
+            ->get(['uid', 'groupId', 'groupName', 'lastUpdated']);
+
         return view('schedule.index', [
             'q'         => $q,
             'date'      => $date,
@@ -66,48 +88,50 @@ class TbScheduleController extends Controller
             'hasGroup'  => $hasGroup,   // untuk logic view + auto-open modal
             'templates' => $templates,
             'allGroups' => $allGroups,
+            'taskDetails' => $taskDetails,
+            'taskGroups' => $taskGroups,   // <— PENTING: kirim ke view
         ]);
     }
 
     private function assignedGroupsForDate(?string $date): array
-{
-    $buckets = collect();
-    if (!$date) return [$buckets, false];
+    {
+        $buckets = collect();
+        if (!$date) return [$buckets, false];
 
-    $schedule = TbSchedule::where('scheduleDate', $date)->first();
-    if (!$schedule) return [$buckets, false];
+        $schedule = TbSchedule::where('scheduleDate', $date)->first();
+        if (!$schedule) return [$buckets, false];
 
-    $pivot = TbScheduleGroup::where('schedule_uid', $schedule->uid)
-        ->orderBy('sortOrder')
-        ->get();
+        $pivot = TbScheduleGroup::where('schedule_uid', $schedule->uid)
+            ->orderBy('sortOrder')
+            ->get();
 
-    if ($pivot->isEmpty()) return [$buckets, false];
+        if ($pivot->isEmpty()) return [$buckets, false];
 
-    $gmap = TbGroup::whereIn('uid', $pivot->pluck('group_uid'))
-        ->get()
-        ->keyBy('uid');
+        $gmap = TbGroup::whereIn('uid', $pivot->pluck('group_uid'))
+            ->get()
+            ->keyBy('uid');
 
-    foreach ($pivot as $sg) {
-        $hour = (int) substr($sg->timeStart, 0, 2);
+        foreach ($pivot as $sg) {
+            $hour = (int) substr($sg->timeStart, 0, 2);
 
-        $list = $buckets->get($hour, collect());
-        $list->push((object) [
-            'sg_uid'    => $sg->uid,                                    // << penting
-            'group_uid' => $sg->group_uid,                               // opsional
-            'groupName' => optional($gmap->get($sg->group_uid))->groupName ?? 'Group',
-            'timeStart' => $sg->timeStart,
-            'timeEnd'   => $sg->timeEnd,
-        ]);
+            $list = $buckets->get($hour, collect());
+            $list->push((object) [
+                'sg_uid'    => $sg->uid,                                    // << penting
+                'group_uid' => $sg->group_uid,                               // opsional
+                'groupName' => optional($gmap->get($sg->group_uid))->groupName ?? 'Group',
+                'timeStart' => $sg->timeStart,
+                'timeEnd'   => $sg->timeEnd,
+            ]);
 
-        $buckets->put($hour, $list);
+            $buckets->put($hour, $list);
+        }
+
+        $buckets = $buckets->sortKeys();
+
+        $has = $pivot->isNotEmpty(); // cukup ini
+
+        return [$buckets, $has];
     }
-
-    $buckets = $buckets->sortKeys();
-
-    $has = $pivot->isNotEmpty(); // cukup ini
-
-    return [$buckets, $has];
-}
 
 
 

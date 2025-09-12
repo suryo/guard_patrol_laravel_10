@@ -1,57 +1,61 @@
 <div class="list-group list-group-flush rounded-0">
 
-  {{-- "Dashboard" diarahkan ke person.index sesuai redirect di "/" --}}
+    {{-- "Dashboard" diarahkan ke person.index sesuai redirect di "/" --}}
 
-  <a href="{{ route('group.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('group.*') ? 'active' : '' }}">
-    <i class="bi bi-alarm me-2"></i> Group Waktu
-  </a>
+    <a href="{{ route('group.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('group.*') ? 'active' : '' }}">
+        <i class="bi bi-alarm me-2"></i> Group Waktu
+    </a>
 
-  <a href="{{ route('checkpoint.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('checkpoint.*') ? 'active' : '' }}">
-    <i class="bi bi-geo-alt-fill me-2"></i> Checkpoint
-  </a>
+    <a href="{{ route('checkpoint.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('checkpoint.*') ? 'active' : '' }}">
+        <i class="bi bi-geo-alt-fill me-2"></i> Checkpoint
+    </a>
 
-  <a href="{{ route('route-guard.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('route-guard.*') ? 'active' : '' }}">
-    <i class="bi bi-shield me-2"></i> Guard
-  </a>
+    <a href="{{ route('task-group.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('task-group.*') ? 'active' : '' }}">
+        <i class="bi bi-activity me-2"></i> Task
+    </a>
 
-   <a href="{{ route('report.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('report.*') ? 'active' : '' }}">
-    <i class="bi bi-graph-up-arrow me-2"></i> Report
-  </a>
+    <a href="{{ route('route-guard.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('route-guard.*') ? 'active' : '' }}">
+        <i class="bi bi-shield me-2"></i> Guard
+    </a>
 
-  <a href="{{ route('schedule.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('schedule.*') ? 'active' : '' }}">
-    <i class="bi bi-calendar2-week me-2"></i> Schedule
-  </a>
+    <a href="{{ route('report.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('report.*') ? 'active' : '' }}">
+        <i class="bi bi-graph-up-arrow me-2"></i> Report
+    </a>
+
+    <a href="{{ route('schedule.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('schedule.*') ? 'active' : '' }}">
+        <i class="bi bi-calendar2-week me-2"></i> Schedule
+    </a>
 
     <a href="{{ route('task.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('task.*') ? 'active' : '' }}">
-    <i class="bi bi-check2-square me-2"></i> Task
-  </a>
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('task.*') ? 'active' : '' }}">
+        <i class="bi bi-check2-square me-2"></i> Task
+    </a>
 
- <a href="{{ route('logs.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('logs.*') ? 'active' : '' }}">
-    <i class="bi bi-journal-text me-2"></i> Logs
-  </a>
+    <a href="{{ route('logs.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('logs.*') ? 'active' : '' }}">
+        <i class="bi bi-journal-text me-2"></i> Logs
+    </a>
 
-  <a href="{{ route('users.index') }}"
-     class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('users.*') ? 'active' : '' }}">
-    <i class="bi bi-person-gear me-2"></i> Users
-  </a>
+    <a href="{{ route('users.index') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('users.*') ? 'active' : '' }}">
+        <i class="bi bi-person-gear me-2"></i> Users
+    </a>
 
- <a href=""
-     class="list-group-item list-group-item-action d-flex align-items-center">
-    <i class="bi bi-geo-alt-fill me-2"></i> Logout
-  </a>
-
+    <a href="" class="list-group-item list-group-item-action d-flex align-items-center">
+        <i class="bi bi-geo-alt-fill me-2"></i> Logout
+    </a>
 
 
 
 
-{{-- <a href="{{ route('person.index') }}"
+
+    {{-- <a href="{{ route('person.index') }}"
      class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('person.*') ? 'active' : '' }}">
     <i class="bi bi-people-fill me-2"></i> Person
   </a>

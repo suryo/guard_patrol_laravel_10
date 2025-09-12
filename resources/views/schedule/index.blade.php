@@ -42,7 +42,15 @@
   </div>
 
   {{-- Modals --}}
-  @include('schedule._modal_add_template')
+  {{-- Modal Preview Template --}}
+<div class="modal fade" id="templateViewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content" id="templateViewModalContent">
+      {{-- akan diisi via AJAX --}}
+    </div>
+  </div>
+</div>
+  @include('schedule._modal_add_template', ['taskDetails' => $taskDetails])
   @include('schedule._modal_assign_group', ['allGroups' => $allGroups])
   @include('schedule._modal_pick_phase')
 @endsection
