@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 
 return new class extends Migration
 {
@@ -25,6 +26,12 @@ return new class extends Migration
                 ->nullOnDelete();
             $t->index(['schedule_group_uid', 'phaseDate']);
         });
+
+        // Panggil seeder langsung
+        \Artisan::call('db:seed', [
+            '--class' => 'TbPhaseSeeder',
+            '--force' => true,   // penting kalau di production
+        ]);
     }
 
     /**

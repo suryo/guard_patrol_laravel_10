@@ -23,7 +23,7 @@ class TbTaskGroupDetail extends Model
         return $this->belongsTo(TbTaskGroup::class, 'group_uid', 'uid');
     }
 
-     public function task()
+    public function task()
     {
         // Ganti 'task_uid' jika FK di tb_task_group_detail Anda berbeda
         return $this->belongsTo(TbTask::class, 'task_uid', 'uid');
@@ -50,14 +50,19 @@ class TbTaskGroupDetail extends Model
             'task_group_detail_uid',
             'template_uid'
         )
-        ->withPivot(['uid','sortOrder'])
-        ->withTimestamps();
+            ->withPivot(['uid', 'sortOrder'])
+            ->withTimestamps();
     }
 
     public function getDisplayNameAttribute()
     {
         return $this->detailName
             ?? $this->name
-            ?? ('Detail #'.$this->uid);
+            ?? ('Detail #' . $this->uid);
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(TbScheduleGroupPhaseActivity::class, 'task_group_detail_uid');
     }
 }

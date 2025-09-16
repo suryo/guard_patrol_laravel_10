@@ -5,6 +5,7 @@ use App\Http\Controllers\TbPersonController;
 use App\Http\Controllers\TbCheckpointController;
 use App\Http\Controllers\Ajax\PhaseAjaxController;
 use App\Http\Controllers\TbTaskGroupController;
+use App\Http\Controllers\SchedulePhaseActivityController;
 
 
 
@@ -46,6 +47,12 @@ Route::resource('checkpoint', TbCheckpointController::class)->parameters(['check
 
 Route::get('task-group', [TbTaskGroupController::class, 'manage'])
     ->name('task-group.index');
+
+Route::prefix('phase')->group(function () {
+    Route::get('{phase}/activities', [SchedulePhaseActivityController::class, 'list'])->name('phase.activities');
+    Route::post('{phase}/activities', [SchedulePhaseActivityController::class, 'store'])->name('phase.activities.store');
+    Route::delete('activities/{id}', [SchedulePhaseActivityController::class, 'destroy'])->name('phase.activities.destroy');
+});
 
 // resource tanpa index
 Route::resource('task-group', TbTaskGroupController::class)

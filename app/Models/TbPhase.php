@@ -30,6 +30,11 @@ class TbPhase extends Model
         return $this->hasMany(\App\Models\TbScheduleGroupPhase::class, 'phase_uid', 'uid');
     }
 
+    public function activities()
+    {
+        return $this->hasMany(TbScheduleGroupPhaseActivity::class, 'phase_uid');
+    }
+
     // public function links()
     // {
     //     return $this->hasMany(TbScheduleGroupPhase::class, 'phase_uid', 'uid');

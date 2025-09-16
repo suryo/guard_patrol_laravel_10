@@ -53,6 +53,51 @@
   @include('schedule._modal_add_template', ['taskDetails' => $taskDetails])
   @include('schedule._modal_assign_group', ['allGroups' => $allGroups])
   @include('schedule._modal_pick_phase')
+  @include('schedule._modal_add_activity')
+
+  @php
+  // Siapkan data untuk JS dalam PHP biasa (tanpa arrow fn di Blade)
+  $taskGroupsForJs = ($taskGroups ?? collect())->map(function ($g) {
+      $details = ($g->details ?? collect())->map(function ($d) {
+          return [
+              'uid'       => $d->uid,
+              'group_uid' => $d->group_uid,
+              'task_uid'  => optional($d->task)->uid,
+              'task_name' => optional($d->task)->taskName
+                              ?? optional($d->task)->name
+                              ?? ('Task #' . ($d->task_uid ?? '')),
+              'sortOrder' => $d->sortOrder,
+              'timeStart' => $d->timeStart ?? null,
+              'timeEnd'   => $d->timeEnd   ?? null,
+          ];
+      })->values();
+
+      return [
+          'uid'     => $g->uid,
+          'name'    => $g->groupName ?? $g->display_name ?? ('Group #' . $g->uid),
+          'details' => $details,
+      ];
+  })->values();
+
+  $taskDetailsFlatForJs = ($taskDetails ?? collect())->map(function ($d) {
+      return [
+          'uid'       => $d->uid,
+          'group_uid' => $d->group_uid,
+          'task_uid'  => $d->task_uid ?? optional($d->task)->uid,
+          'task_name' => optional($d->task)->taskName
+                          ?? optional($d->task)->name
+                          ?? ('Task #' . ($d->task_uid ?? '')),
+          'sortOrder' => $d->sortOrder,
+      ];
+  })->values();
+@endphp
+
+<script>
+  window.SCHEDULE_DATA = {!! json_encode([
+    'taskGroups'      => $taskGroupsForJs,
+    'taskDetailsFlat' => $taskDetailsFlatForJs,
+  ], JSON_UNESCAPED_UNICODE) !!};
+</script>
 @endsection
 
 @push('scripts')

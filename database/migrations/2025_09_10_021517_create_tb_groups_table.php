@@ -21,6 +21,18 @@ return new class extends Migration
             $t->timestamp('lastUpdated')->useCurrent();
             $t->index(['timeStart', 'timeEnd']);
         });
+
+        // // Panggil seeder langsung
+        // \Artisan::call('db:seed', [
+        //     '--class' => 'TbGroupSeeder',
+        //     '--force' => true,   // penting kalau di production
+        // ]);
+
+        // // Panggil seeder langsung
+        // \Artisan::call('db:seed', [
+        //     '--class' => 'TbPhaseSeeder',
+        //     '--force' => true,   // penting kalau di production
+        // ]);
     }
 
     /**

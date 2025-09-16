@@ -67,7 +67,7 @@ class TbScheduleTemplateController extends Controller
             $tpl->taskDetails()->attach($attach);
         }
 
-        return redirect()->route('schedule-template.index')->with('ok', 'Template dibuat.');
+        return redirect()->route('schedule.index')->with('ok', 'Template dibuat.');
     }
     public function edit(TbScheduleTemplate $schedule_template)
     {
@@ -145,9 +145,12 @@ class TbScheduleTemplateController extends Controller
             'ids.*' => ['integer'],
         ]);
 
-        \App\Models\TbScheduleTemplate::whereIn('uid', $data['ids'])->delete();
+        $items = \App\Models\TbScheduleTemplate::whereIn('uid', $data['ids'])->get();
+        foreach ($items as $tpl) {
+            $tpl->delete(); // men-trigger booted()->deleting => detach pivot
+        }
 
-        return back()->with('ok', count($data['ids']) . ' template dihapus.');
+        return back()->with('ok', $items->count() . ' template dihapus.');
     }
 
 
@@ -161,4 +164,10 @@ class TbScheduleTemplateController extends Controller
     // {
     //     return view('schedule_template.show', compact('schedule_template'));
     // }
+
+    public function destroy(TbScheduleTemplate $schedule_template)
+{
+    $schedule_template->delete(); // event booted() akan detach pivot
+    return back()->with('ok', 'Deleted');
+}
 }

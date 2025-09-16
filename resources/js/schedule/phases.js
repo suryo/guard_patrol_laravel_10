@@ -15,6 +15,11 @@ function phaseListHTML(phases, groupUid, date) {
           ${p.phaseId ? `<div class="small text-muted">${p.phaseId}</div>` : ''}
         </div>
         <div class="btn-group btn-group-sm">
+        <button type="button"
+              class="btn btn-sm btn-outline-primary btn-add-activity"
+              data-phase="{{ $ph->uid }}">
+        + Add Activity
+      </button>
           <button class="btn btn-outline-secondary edit-phase"
             data-link="${p.link_uid}" data-group="${groupUid}" data-date="${p.phaseDate}" data-phase="${p.phase_uid}">
             Edit
