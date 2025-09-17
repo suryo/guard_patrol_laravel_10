@@ -4,27 +4,49 @@ function phaseListHTML(phases, groupUid, date) {
   if (!phases || phases.length === 0) {
     return `
       <div class="alert alert-warning py-2 mb-2">Phase belum ada.</div>
-      <button class="btn btn-sm btn-primary add-phase" data-group="${groupUid}" data-date="${date}">Tambah Phase</button>
+      <button class="btn btn-sm btn-primary add-phase" data-group="${groupUid}" data-date="${date}">
+        Tambah Phase
+      </button>
     `;
   }
+
   const items = phases.map(p => `
     <li class="list-group-item">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <div class="fw-semibold">${p.phaseName ?? '(phase)'} <small class="text-muted">(${p.phaseDate})</small></div>
+          <div class="fw-semibold">
+            ${p.phaseName ?? '(phase)'}
+            ${p.phaseDate ? `<small class="text-muted">(${p.phaseDate})</small>` : ''}
+          </div>
           ${p.phaseId ? `<div class="small text-muted">${p.phaseId}</div>` : ''}
         </div>
         <div class="btn-group btn-group-sm">
-        <button type="button"
-              class="btn btn-sm btn-outline-primary btn-add-activity"
-              data-phase="{{ $ph->uid }}">
-        + Add Activity
-      </button>
-          <button class="btn btn-outline-secondary edit-phase"
-            data-link="${p.link_uid}" data-group="${groupUid}" data-date="${p.phaseDate}" data-phase="${p.phase_uid}">
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-primary btn-add-activity"
+            data-phase="${p.phase_uid}"
+            data-group="${groupUid}"
+            data-link="${p.link_uid || ''}"
+          >
+            + Add Activity ${groupUid}
+          </button>
+
+          <button
+            class="btn btn-outline-secondary edit-phase"
+            data-link="${p.link_uid}"
+            data-group="${groupUid}"
+            data-date="${p.phaseDate}"
+            data-phase="${p.phase_uid}"
+          >
             Edit
           </button>
-          <button class="btn btn-outline-danger delete-phase" data-link="${p.link_uid}">Delete</button>
+
+          <button
+            class="btn btn-outline-danger delete-phase"
+            data-link="${p.link_uid}"
+          >
+            Delete
+          </button>
         </div>
       </div>
       <div id="phase-content-${p.link_uid}" class="mt-2 d-none"></div>
@@ -33,7 +55,9 @@ function phaseListHTML(phases, groupUid, date) {
 
   return `
     <ul class="list-group">${items}</ul>
-    <button class="btn btn-sm btn-primary mt-2 add-phase" data-group="${groupUid}" data-date="${date}">Tambah Phase</button>
+    <button class="btn btn-sm btn-primary mt-2 add-phase" data-group="${groupUid}" data-date="${date}">
+      Tambah Phase
+    </button>
   `;
 }
 
@@ -44,13 +68,13 @@ async function loadPhaseBox(box) {
   try {
     const data = await jget(routes.listPhases(uid, date));
     box.innerHTML = phaseListHTML(data.phases || [], uid, date);
-  } catch {
+  } catch (_) {
     box.innerHTML = `
-    <div class="alert alert-danger py-2 mb-2">Gagal memuat phase.</div>
-    <button class="btn btn-sm btn-primary add-phase" data-group="${uid}" data-date="${date}">
-      Tambah Phase
-    </button>`;
-
+      <div class="alert alert-danger py-2 mb-2">Gagal memuat phase.</div>
+      <button class="btn btn-sm btn-primary add-phase" data-group="${uid}" data-date="${date}">
+        Tambah Phase
+      </button>
+    `;
   }
 }
 
@@ -88,7 +112,7 @@ function bindPickPhaseModal() {
       (data.options || []).forEach(o => {
         const opt = document.createElement('option');
         opt.value = o.uid;
-        opt.textContent = (o.phaseOrder ? o.phaseOrder + '. ' : '') + (o.phaseName || o.phaseId || ('#'+o.uid));
+        opt.textContent = (o.phaseOrder ? o.phaseOrder + '. ' : '') + (o.phaseName || o.phaseId || ('#' + o.uid));
         if (selectedPhaseUid && +selectedPhaseUid === +o.uid) opt.selected = true;
         phaseEl.appendChild(opt);
       });
@@ -102,30 +126,42 @@ function bindPickPhaseModal() {
 
   // delegated clicks
   document.addEventListener('click', async (e) => {
-    if (e.target.matches('.add-phase')) {
+    const t = e.target;
+
+    if (t.matches('.add-phase')) {
       e.preventDefault();
-      await openPickModal({ mode: 'create', groupUid: e.target.dataset.group, date: e.target.dataset.date });
+      await openPickModal({
+        mode: 'create',
+        groupUid: t.dataset.group,
+        date: t.dataset.date
+      });
     }
-    if (e.target.matches('.edit-phase')) {
+
+    if (t.matches('.edit-phase')) {
       e.preventDefault();
       await openPickModal({
         mode: 'edit',
-        groupUid: e.target.dataset.group,
-        date: e.target.dataset.date,
-        linkUid: e.target.dataset.link,
-        selectedPhaseUid: e.target.dataset.phase
+        groupUid: t.dataset.group,
+        date: t.dataset.date,
+        linkUid: t.dataset.link,
+        selectedPhaseUid: t.dataset.phase
       });
     }
-    if (e.target.matches('.delete-phase')) {
+
+    if (t.matches('.delete-phase')) {
       e.preventDefault();
       if (!confirm('Hapus phase ini dari group?')) return;
-      const link = e.target.dataset.link;
+      const link = t.dataset.link;
       try {
         await fetch(routes.deleteLink(link), {
           method: 'DELETE',
-          headers: { 'Accept':'application/json','X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN': token }
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': token
+          }
         });
-        const box = e.target.closest('.accordion-body').querySelector('.phase-box');
+        const box = t.closest('.accordion-body').querySelector('.phase-box');
         await loadPhaseBox(box);
       } catch {
         alert('Gagal menghapus.');
@@ -140,6 +176,7 @@ function bindPickPhaseModal() {
     const linkUid  = linkEl.value;
     const phaseUid = phaseEl.value;
     const date     = dateEl.value;
+
     if (!phaseUid || !date) {
       alert('Lengkapi pilihan phase & tanggal.');
       return;
@@ -147,9 +184,17 @@ function bindPickPhaseModal() {
 
     try {
       if (mode === 'create') {
-        await jsend(routes.storePhase(groupUid), 'POST', { phase_uid: +phaseUid, phaseDate: date });
+        await jsend(routes.storePhase(groupUid), 'POST', {
+          phase_uid: +phaseUid,
+          phaseDate: date,
+          schedule_group_uid: +groupUid   // <<-- tambahan
+        });
       } else {
-        await jsend(routes.updateLink(linkUid), 'PUT', { phase_uid: +phaseUid, phaseDate: date });
+        await jsend(routes.updateLink(linkUid), 'PUT', {
+          phase_uid: +phaseUid,
+          phaseDate: date,
+          schedule_group_uid: +groupUid   // <<-- tambahan
+        });
       }
       bootstrap.Modal.getInstance(modal).hide();
       const box = document.getElementById('group-content-' + groupUid);
