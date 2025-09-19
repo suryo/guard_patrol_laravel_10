@@ -1,0 +1,134 @@
+/* resources/css/schedule.css */
+
+:root {
+  --gap-sm: .5rem;
+  --gap: .75rem;
+  --gap-lg: 1rem;
+  --border: #e9ecef;
+  --muted: #6c757d;
+  --soft: #f8f9fa;
+}
+
+/* ====================== GENERAL ====================== */
+body {
+  background: #f8fafc;
+}
+
+.page-title {
+  letter-spacing: .2px;
+}
+
+.toolbar .btn {
+  min-width: 8rem;
+}
+
+/* ====================== GROUP CARD ====================== */
+.group-card {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+  background: #fff;
+}
+
+.group-head {
+  background: #ffffff;
+  padding: .85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.group-meta {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.group-body {
+  padding: 1rem;
+}
+
+/* ====================== ACCORDION LEVELS ====================== */
+.acc-clean .accordion-item {
+  border: 1px solid var(--border);
+  border-radius: .75rem;
+  overflow: hidden;
+  background: #fff;
+}
+
+.acc-clean .accordion-item + .accordion-item {
+  margin-top: .75rem;
+}
+
+.acc-clean .accordion-button {
+  gap: .5rem;
+  padding: .75rem 1rem;
+  font-weight: 600;
+  background: #fff;
+}
+
+.acc-clean .accordion-button::after {
+  transform: scale(.9);
+}
+
+.acc-clean .accordion-body {
+  padding: .85rem 1rem 1rem;
+  background: #fff;
+}
+
+/* indent visual untuk level berikutnya */
+.phase-accordion {
+  border-left: 4px solid var(--border);
+  margin-left: .25rem;
+  padding-left: .75rem;
+}
+
+.activity-accordion {
+  border-left: 4px solid #f1f3f5;
+  margin-left: .25rem;
+  padding-left: .75rem;
+}
+
+/* ====================== BADGE KECIL ====================== */
+.badge-soft {
+  background: #eef5ff;
+  color: #0d6efd;
+  border: 1px solid #d9e7ff;
+  font-weight: 500;
+}
+
+.badge-muted {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  font-weight: 500;
+}
+
+/* ====================== ACTIVITY BOX ====================== */
+.activity-box {
+  border: 1px dashed var(--border);
+  background: var(--soft);
+  border-radius: .75rem;
+  padding: .75rem;
+}
+
+.kv {
+  display: flex;
+  gap: .5rem;
+  font-size: .95rem;
+}
+
+.kv .k {
+  min-width: 78px;
+  color: var(--muted);
+}
+
+@media (min-width: 992px) {
+  .group-head {
+    padding: 1rem 1.25rem;
+  }
+  .group-body {
+    padding: 1rem 1.25rem 1.25rem;
+  }
+}
