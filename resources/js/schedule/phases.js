@@ -83,8 +83,8 @@ function renderActivitiesHTML(list) {
           <div class="small text-muted mb-2">
             Pos: ${esc(pos)} ${task ? `&middot; Task: ${esc(task)}` : ""}
           </div>
-          <div class="row g-3">
-            <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-12">
               <div class="kv"><div class="k">PIC</div><div class="v">: ${esc(
                 pic
             )}</div></div>
@@ -95,7 +95,7 @@ function renderActivitiesHTML(list) {
                 time
             )}</div></div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
               <div class="kv"><div class="k">Catatan</div><div class="v">: ${note ? esc(note) : "-"
                 }</div></div>
             </div>
@@ -163,8 +163,8 @@ function renderActivitiesAccordionHTML(list, seed = "") {
               <div class="small text-muted mb-2">
                 Pos: ${esc(pos)} ${task ? `&middot; Task: ${esc(task)}` : ""}
               </div>
-              <div class="row g-3">
-                <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-12">
                   <div class="kv"><div class="k">PIC</div><div class="v">: ${esc(
                 pic
             )}</div></div>
@@ -175,7 +175,7 @@ function renderActivitiesAccordionHTML(list, seed = "") {
                 time
             )}</div></div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-12">
                   <div class="kv"><div class="k">Catatan</div><div class="v">: ${note ? esc(note) : "-"
                 }</div></div>
                 </div>
