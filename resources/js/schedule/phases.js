@@ -8,13 +8,13 @@ function esc(s) {
     return String(s ?? "").replace(
         /[&<>"']/g,
         (m) =>
-            ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;",
-            }[m])
+        ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+        }[m])
     );
 }
 
@@ -86,25 +86,24 @@ function renderActivitiesHTML(list) {
           <div class="row g-3">
             <div class="col-md-6">
               <div class="kv"><div class="k">PIC</div><div class="v">: ${esc(
-                  pic
-              )}</div></div>
+                pic
+            )}</div></div>
               <div class="kv"><div class="k">Lokasi</div><div class="v">: ${esc(
-                  where
-              )}</div></div>
+                where
+            )}</div></div>
               <div class="kv"><div class="k">Waktu</div><div class="v">: ${esc(
-                  time
-              )}</div></div>
+                time
+            )}</div></div>
             </div>
             <div class="col-md-6">
-              <div class="kv"><div class="k">Catatan</div><div class="v">: ${
-                  note ? esc(note) : "-"
-              }</div></div>
+              <div class="kv"><div class="k">Catatan</div><div class="v">: ${note ? esc(note) : "-"
+                }</div></div>
             </div>
           </div>
           <div class="mt-2 d-flex justify-content-end">
             <button class="btn btn-sm btn-outline-danger btn-del-activity" data-act="${esc(
-                a.uid ?? a.id
-            )}">
+                    a.uid ?? a.id
+                )}">
               Hapus
             </button>
           </div>
@@ -167,19 +166,18 @@ function renderActivitiesAccordionHTML(list, seed = "") {
               <div class="row g-3">
                 <div class="col-md-6">
                   <div class="kv"><div class="k">PIC</div><div class="v">: ${esc(
-                      pic
-                  )}</div></div>
+                pic
+            )}</div></div>
                   <div class="kv"><div class="k">Lokasi</div><div class="v">: ${esc(
-                      where
-                  )}</div></div>
+                where
+            )}</div></div>
                   <div class="kv"><div class="k">Waktu</div><div class="v">: ${esc(
-                      time
-                  )}</div></div>
+                time
+            )}</div></div>
                 </div>
                 <div class="col-md-6">
-                  <div class="kv"><div class="k">Catatan</div><div class="v">: ${
-                      note ? esc(note) : "-"
-                  }</div></div>
+                  <div class="kv"><div class="k">Catatan</div><div class="v">: ${note ? esc(note) : "-"
+                }</div></div>
                 </div>
               </div>
               <div class="mt-2 d-flex justify-content-end">
@@ -208,23 +206,23 @@ function renderActivitiesAccordionHTML(list, seed = "") {
  *  RENDER PHASE LIST (kanan, per group) → accordion rapi
  * ==========================================================================*/
 function phaseListHTML(phases, groupUid, date) {
-  if (!phases || phases.length === 0) {
-    return `
+    if (!phases || phases.length === 0) {
+        return `
       <div class="alert alert-warning py-2 mb-2">Phase belum ada.</div>
       <button class="btn btn-sm btn-primary add-phase" data-group="${groupUid}" data-date="${esc(date)}">
         Tambah Phase
       </button>
     `;
-  }
+    }
 
-  const items = phases.map((p) => {
-    const pid = p.phase_uid;
-    const linkUid = p.link_uid || "";
-    const pHeaderId   = `ph-h-${groupUid}-${pid}-${linkUid}`;
-    const pCollapseId = `ph-c-${groupUid}-${pid}-${linkUid}`;
-    const actPanelId  = `act-panel-${groupUid}-${pid}-${linkUid}`;
+    const items = phases.map((p) => {
+        const pid = p.phase_uid;
+        const linkUid = p.link_uid || "";
+        const pHeaderId = `ph-h-${groupUid}-${pid}-${linkUid}`;
+        const pCollapseId = `ph-c-${groupUid}-${pid}-${linkUid}`;
+        const actPanelId = `act-panel-${groupUid}-${pid}-${linkUid}`;
 
-    return `
+        return `
       <div class="accordion-item">
         <h2 class="accordion-header" id="${pHeaderId}">
           <button
@@ -291,9 +289,9 @@ function phaseListHTML(phases, groupUid, date) {
         </div>
       </div>
     `;
-  }).join("");
+    }).join("");
 
-  return `
+    return `
     <div class="accordion acc-clean phase-accordion">
       ${items}
     </div>
@@ -359,7 +357,7 @@ async function loadPhaseActivities(phaseUid, panelEl) {
             let json = null;
             try {
                 json = await res.json();
-            } catch {}
+            } catch { }
             acts = Array.isArray(json) ? json : json?.data || [];
         }
 
@@ -384,15 +382,27 @@ async function loadPhaseActivities(phaseUid, panelEl) {
 }
 
 /* ============================================================================
- *  BIND: Autoload Phase Box saat parent collapse (group) dibuka
+ * BIND: Autoload Phase Box saat parent collapse (group) dibuka
  * ==========================================================================*/
 function bindAccordionAutoload() {
-    document.querySelectorAll(".accordion-collapse").forEach((col) => {
-        col.addEventListener("shown.bs.collapse", () => {
-            // Abaikan inner activities
-            if (col.classList.contains("act-collapse")) return;
-            col.querySelectorAll(".phase-box").forEach(loadPhaseBox);
-        });
+    // Gunakan event delegation yang 'mendengarkan' dari document
+    document.addEventListener("shown.bs.collapse", (event) => {
+        // event.target adalah elemen .accordion-collapse yang baru saja terbuka
+        const collapseElement = event.target;
+
+        // Pastikan kita tidak menjalankan ini untuk collapse-dalam-collapse yang lebih dalam (seperti activities)
+        // Kita hanya ingin men-trigger load saat .phase-box berada langsung di dalamnya.
+        if (collapseElement.classList.contains("act-collapse")) {
+            return;
+        }
+
+        // Cari elemen .phase-box di dalam collapse yang baru saja terbuka
+        const phaseBoxes = collapseElement.querySelectorAll(".phase-box");
+
+        // Jika ditemukan, panggil loader untuk masing-masing
+        if (phaseBoxes.length > 0) {
+            phaseBoxes.forEach(loadPhaseBox);
+        }
     });
 }
 
