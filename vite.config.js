@@ -10,6 +10,7 @@ export default defineConfig({
         laravel({
             input: [
                 "resources/css/app.css",
+                "resources/css/schedule.css",
                 "resources/js/app.js",
                 "resources/js/schedule/index.js"
             ],

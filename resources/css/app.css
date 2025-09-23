@@ -1,0 +1,9 @@
+.calendar-day:hover {
+  cursor: pointer;
+  background-color: #e9ecef; /* Ini adalah warna abu-abu muda, mirip hover pada tabel Bootstrap */
+}
+
+/* Opsional: Jangan beri efek hover jika sel sudah dipilih */
+.calendar-day.table-primary:hover {
+  background-color: #b6d4fe; /* Warna hover untuk sel yang aktif/terpilih */
+}
