@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\ReportController;
 
 use App\Http\Controllers\Api\MasterController;
 use App\Http\Controllers\Api\PatrolController;
+use App\Http\Controllers\Api\PatrolActionController;
 use App\Http\Controllers\Api\IncidentController;
 
 use App\Http\Controllers\Api\GuardActivityController;
@@ -38,6 +39,13 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/schedule/hierarchy', [ScheduleHierarchyController::class, 'index']);
 
+    // patrol flow
+    Route::post('/patrols/start',        [PatrolActionController::class, 'start']);           // mulai patroli 1 phase
+    Route::patch('/patrols/{activity}/tasks', [PatrolActionController::class, 'bulkTasks']);  // update banyak task sekaligus
+    Route::patch('/patrols/{activity}/tasks/{task_uid}', [PatrolActionController::class, 'checkTask']); // update 1 task
+    Route::patch('/patrols/{activity}/finish', [PatrolActionController::class, 'finish']);    // akhiri patroli
+    Route::get('/patrols/{activity}',    [PatrolActionController::class, 'show']);            // lihat ringkas
+
     // route yang butuh token JWT
     Route::middleware('auth:api')->group(function () {
         Route::get('auth/me',     [AuthController::class, 'me']);
@@ -48,11 +56,11 @@ Route::prefix('v1')->group(function () {
         Route::get('checkpoints',  [MasterController::class, 'checkpoints']);  // ?group_uid=...
         Route::get('routes',       [MasterController::class, 'routes']);       // optional
 
-        // PATROL
-        Route::post('patrol/start',              [PatrolController::class, 'start']);
-        Route::post('patrol/{patrol}/scan',      [PatrolController::class, 'scan']);
-        Route::post('patrol/{patrol}/finish',    [PatrolController::class, 'finish']);
-        Route::get('patrol/history',             [PatrolController::class, 'history']); // ?from&to&page
+        // // PATROL
+        // Route::post('patrol/start',              [PatrolController::class, 'start']);
+        // Route::post('patrol/{patrol}/scan',      [PatrolController::class, 'scan']);
+        // Route::post('patrol/{patrol}/finish',    [PatrolController::class, 'finish']);
+        // Route::get('patrol/history',             [PatrolController::class, 'history']); // ?from&to&page
 
         // INCIDENT
         Route::post('incident',                   [IncidentController::class, 'store']);
