@@ -56,7 +56,7 @@ class ScheduleHierarchyController extends Controller
             'tg.uid as task_group_uid',
             'tg.groupName as taskgroup',
             'task.uid as task_uid',
-            'task.taskName',
+            'task.taskName as task_name',
             'sgp_activity.sortOrder',
             'sgp_activity.activityNote',
         ]);
@@ -93,7 +93,7 @@ class ScheduleHierarchyController extends Controller
         if (!is_null($row->task_uid)) {
             $groups[$gKey]['phases'][$pKey]['taskgroups'][$tgKey]['tasks'][] = [
                 'taskUid'      => $row->task_uid,
-                'taskName'     => $row->taskName,
+                'taskName'     => $row->task_name ?? $row->taskName ?? null,
                 'sortOrder'    => $row->sortOrder,
                 'activityNote' => $row->activityNote,
             ];
