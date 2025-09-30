@@ -1,0 +1,22 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-c73b608f.css",
+    "isEntry": true,
+    "src": "resources/css/app.css"
+  },
+  "resources/css/schedule.css": {
+    "file": "assets/schedule-065be324.css",
+    "isEntry": true,
+    "src": "resources/css/schedule.css"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-4bb9403f.js",
+    "isEntry": true,
+    "src": "resources/js/app.js"
+  },
+  "resources/js/schedule/index.js": {
+    "file": "assets/index-a0664c97.js",
+    "isEntry": true,
+    "src": "resources/js/schedule/index.js"
+  }
+}
