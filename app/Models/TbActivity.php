@@ -45,8 +45,8 @@ class TbActivity extends Model
     public function tasks()
     {
         return $this->belongsToMany(TbTask::class, 'tb_activity_task', 'activity_uid', 'task_uid')
-                    ->withPivot(['is_done', 'checked_at', 'notes'])
-                    ->withTimestamps();
+            ->withPivot(['is_done', 'checked_at', 'notes'])
+            ->withTimestamps();
     }
 
     // (Opsional) relasi ke checkpoint jika Anda punya model TbCheckpoint
@@ -74,7 +74,7 @@ class TbActivity extends Model
     {
         return $q->where(function ($w) use ($start, $end) {
             $w->whereBetween('activityStart', [$start, $end])
-              ->orWhereBetween('activityEnd', [$start, $end]);
+                ->orWhereBetween('activityEnd', [$start, $end]);
         });
     }
 

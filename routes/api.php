@@ -15,6 +15,9 @@ use App\Http\Controllers\Api\MasterController;
 use App\Http\Controllers\Api\PatrolController;
 use App\Http\Controllers\Api\IncidentController;
 
+use App\Http\Controllers\Api\GuardActivityController;
+
+use App\Http\Controllers\Api\ScheduleHierarchyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +35,8 @@ Route::prefix('v1')->group(function () {
     Route::post('auth/register', [AuthController::class, 'register']);
     Route::post('auth/login',    [AuthController::class, 'login']);
     Route::post('auth/refresh',  [AuthController::class, 'refresh']);
+
+    Route::get('/schedule/hierarchy', [ScheduleHierarchyController::class, 'index']);
 
     // route yang butuh token JWT
     Route::middleware('auth:api')->group(function () {
@@ -53,6 +58,19 @@ Route::prefix('v1')->group(function () {
         Route::post('incident',                   [IncidentController::class, 'store']);
         Route::get('incident',                    [IncidentController::class, 'index']); // ?date
         Route::get('incident/{incident}',         [IncidentController::class, 'show']);
+
+
+        // Mulai aktivitas untuk 1 phase pada 1 group di tanggal tertentu
+        Route::post('/activities/start', [GuardActivityController::class, 'start']);
+
+        // Selesaikan aktivitas (isi checkpoint end, status selesai)
+        Route::patch('/activities/{activity}/finish', [GuardActivityController::class, 'finish']);
+
+        // Tandai satu task pada aktivitas sebagai selesai / beri catatan
+        Route::patch('/activities/{activity}/tasks/{task}', [GuardActivityController::class, 'checkTask']);
+
+        // (opsional) Ambil daftar task terjadwal untuk validasi di mobile
+        Route::get('/scheduled-tasks', [GuardActivityController::class, 'scheduledTasks']);
     });
 });
 
